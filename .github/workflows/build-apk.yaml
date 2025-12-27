@@ -47,6 +47,7 @@ jobs:
           curl -sSL https://get.sdkman.io | bash  # Install SDKMAN
           source "$HOME/.sdkman/bin/sdkman-init.sh"
           sdk install gradle
+          gradle --version
 
       - name: Run Gradle Wrapper
         working-directory: ./workspace/${{ github.event.inputs.subdir }}  # Adjust if your project is in a subdirectory
@@ -88,6 +89,16 @@ jobs:
           git clone --recurse-submodules --depth=1 --branch "${{ github.event.inputs.branchName }}" https://github.com/GeekNeuron/SubPilot.git workspace
          fi
 
+         # Navigate into the workspace directory
+         cd workspace/${{ github.event.inputs.subdir }}
+
+         # Run Gradle wrapper creation if not present
+         if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+           echo "Gradle wrapper not found, creating one..."
+           gradle wrapper  # Ensure Gradle is installed for this step
+         fi
+
+
 
       - name: Build APK
         working-directory: ./workspace/${{ github.event.inputs.subdir }}  # Ensure this points to the correct directory
@@ -100,7 +111,14 @@ jobs:
 
          # Set permissions for the wrapper script and gradle-wrapper.jar
          chmod +x gradlew
+         ./gradlew --version
          chmod +x gradle/wrapper/gradle-wrapper.jar  # Ensure gradle-wrapper.jar is executable
+
+         if [[ "${{ github.event.inputs.taskName }}" == *Release* ]]; then
+          # Signing logic remains unchanged
+         else
+          ./gradlew assembleRelease --stacktrace
+         fi
 
          # Check for Gradle build files, and initialize if none exist
          if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
