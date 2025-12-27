@@ -17,6 +17,11 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
+      - name: Make Directories
+        run: |
+          # Create directories
+          mkdir -p ./workspace/${{ github.event.inputs.subdir }}  # Create the directory if it doesn't exist
+      
       - name: Install Gradle
         run: |
           curl -sSL https://get.sdkman.io | bash  # Install SDKMAN
@@ -27,7 +32,7 @@ jobs:
         working-directory: ./workspace/${{ github.event.inputs.subdir }}  # Adjust if your project is in a subdirectory
         run: |
           # Ensure that the working directory exists
-          mkdir -p ./workspace/${{ github.event.inputs.subdir }}  # Create the directory if it doesn't exist
+          
           cd ./workspace/${{ github.event.inputs.subdir }}  # Change to the correct directory
 
           # Check if gradlew exists, if not create it
