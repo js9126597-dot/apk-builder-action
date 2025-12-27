@@ -75,11 +75,19 @@ jobs:
       
       - name: Clone project
         run: |
-          if [[ -z "${{ github.event.inputs.branchName }}" ]]; then
-            git clone --recurse-submodules --depth=1 https://github.com/GeekNeuron/SubPilot.git workspace
-          else
-            git clone --recurse-submodules --depth=1 --branch "${{ github.event.inputs.branchName }}" https://github.com/GeekNeuron/SubPilot.git workspace
-          fi
+         # Check if the workspace directory already exists
+         if [ -d "workspace" ]; then
+         echo "Removing existing workspace directory..."
+         rm -rf workspace  # Remove the directory if it exists
+         fi
+
+         # Clone the repository
+         if [[ -z "${{ github.event.inputs.branchName }}" ]]; then
+          git clone --recurse-submodules --depth=1 https://github.com/GeekNeuron/SubPilot.git workspace
+         else
+          git clone --recurse-submodules --depth=1 --branch "${{ github.event.inputs.branchName }}" https://github.com/GeekNeuron/SubPilot.git workspace
+         fi
+
 
       - name: Build APK
         working-directory: ./workspace/${{ github.event.inputs.subdir }}
