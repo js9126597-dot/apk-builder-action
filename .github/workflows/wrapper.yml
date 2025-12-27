@@ -36,7 +36,7 @@ jobs:
           # Check for Gradle build files, and initialize if none exist
           if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
             echo "No Gradle build files found. Initializing Gradle project..."
-            ./gradlew init  # Now it should work since gradlew should exist
+            gradlew init  # Now it should work since gradlew should exist
           fi
           
           # Ensure that the working directory exists
