@@ -19,17 +19,21 @@ jobs:
 
       - name: Run Gradle Wrapper
         run: |
-          # Set permissions for the wrapper script
-          chmod +x gradlew
+
+          if [ ! -f "gradlew" ]; then
+            gradle wrapper
+          fi
+          
           # Check for Gradle build files, and initialize if none exist
           if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
             echo "No Gradle build files found. Initializing Gradle project..."
             ./gradlew init
           fi
           
-          if [ ! -f "gradlew" ]; then
-            gradle wrapper
-          fi
+          
+
+          # Set permissions for the wrapper script
+          chmod +x gradlew
 
           # Now run Gradle command
           ./gradlew --version  # Replace this with a specific Gradle task if needed
