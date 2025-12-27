@@ -43,7 +43,6 @@ jobs:
             git clone --recurse-submodules --depth=1 --branch "${{ github.event.inputs.branchName }}" https://github.com/GeekNeuron/SubPilot.git workspace
           fi
 
-
       - name: Build APK
         working-directory: ./workspace/${{ github.event.inputs.subdir }}
         run: |
@@ -60,8 +59,10 @@ jobs:
 
               mkdir -p $HOME/.android
               mv debug.keystore $HOME/.android/debug.keystore
+              chmod +x $HOME/.android/debug.keystore # Set permissions for the keystore
             fi
 
+            chmod +x gradlew # Ensure gradlew is executable before running
             ./gradlew ${{ github.event.inputs.taskName }} \
               -Pandroid.injected.signing.store.file="$HOME/.android/debug.keystore" \
               -Pandroid.injected.signing.store.password=android \
@@ -69,6 +70,7 @@ jobs:
               -Pandroid.injected.signing.key.password=android \
               --stacktrace
           else
+            chmod +x gradlew # Ensure gradlew is executable before running
             ./gradlew ${{ github.event.inputs.taskName }} --stacktrace
           fi
 
@@ -78,4 +80,3 @@ jobs:
           path: workspace/**/*.apk
           name: apk-archive
           retention-days: 1
-
