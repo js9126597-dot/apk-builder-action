@@ -25,5 +25,13 @@ jobs:
 
           # Set permissions for the wrapper script
           chmod +x gradlew
-          ./gradlew --version  # You can replace this with any Gradle command.
+          # Check for Gradle build files, and initialize if none exist
+          if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
+            echo "No Gradle build files found. Initializing Gradle project..."
+            ./gradlew init
+          fi
+
+          # Now run Gradle command
+          ./gradlew --version  # Replace this with a specific Gradle task if needed
+          
 
