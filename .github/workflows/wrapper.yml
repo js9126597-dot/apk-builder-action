@@ -33,6 +33,12 @@ jobs:
       - name: Run Gradle Wrapper
         working-directory: ./workspace/${{ github.event.inputs.subdir }}  # Adjust if your project is in a subdirectory
         run: |
+          # Check for Gradle build files, and initialize if none exist
+          if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
+            echo "No Gradle build files found. Initializing Gradle project..."
+            ./gradlew init  # Now it should work since gradlew should exist
+          fi
+          
           # Ensure that the working directory exists
           
           # Check if gradlew exists, if not create it
@@ -44,11 +50,7 @@ jobs:
           # Set permissions for the wrapper script
           chmod +x gradlew
 
-          # Check for Gradle build files, and initialize if none exist
-          if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
-            echo "No Gradle build files found. Initializing Gradle project..."
-            ./gradlew init  # Now it should work since gradlew should exist
-          fi
+
 
           # Now run Gradle command
           ./gradlew --version  # Replace this with a specific Gradle task if needed
