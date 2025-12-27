@@ -1,7 +1,7 @@
-name: Gradle Wrapper Command
+name: Build and Run Gradle
 
 on:
-  workflow_dispatch:  # This allows you to manually trigger the workflow
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   build:
@@ -10,30 +10,36 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+        
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "17"  # Specify the version of JDK you want
+          java-version: "17"
+
+      - name: Install Gradle
+        run: |
+          curl -sSL https://get.sdkman.io | bash  # Install SDKMAN
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk install gradle
 
       - name: Run Gradle Wrapper
+        working-directory: ./workspace/${{ github.event.inputs.subdir }}  # Adjust if your project is in a subdirectory
         run: |
-
-          # Check for Gradle build files, and initialize if none exist
-          if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
-            echo "No Gradle build files found. Initializing Gradle project..."
-            ./gradlew init
-          fi
-          
+          # Check if gradlew exists, if not create it
           if [ ! -f "gradlew" ]; then
-            gradle wrapper
+            echo "Gradle wrapper not found, creating one..."
+            gradle wrapper  # This assumes Gradle is installed
           fi
 
           # Set permissions for the wrapper script
           chmod +x gradlew
 
+          # Check for Gradle build files, and initialize if none exist
+          if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
+            echo "No Gradle build files found. Initializing Gradle project..."
+            ./gradlew init  # Now it should work since gradlew should exist
+          fi
+
           # Now run Gradle command
           ./gradlew --version  # Replace this with a specific Gradle task if needed
-          
-
