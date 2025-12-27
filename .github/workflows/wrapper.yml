@@ -20,6 +20,7 @@ jobs:
       - name: Make Directories
         run: |
           # Create directories
+          mkdir -p /home/runner/work/apk-builder-action/apk-builder-action/./workspace/
           mkdir -p ./workspace/${{ github.event.inputs.subdir }}  # Create the directory if it doesn't exist
       
       - name: Install Gradle
