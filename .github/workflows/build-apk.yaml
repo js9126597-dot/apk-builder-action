@@ -90,36 +90,47 @@ jobs:
 
 
       - name: Build APK
-        working-directory: ./workspace/${{ github.event.inputs.subdir }}
+        working-directory: ./workspace/${{ github.event.inputs.subdir }}  # Ensure this points to the correct directory
         run: |
-         if [ ! -f "gradlew" ]; then gradle wrapper; fi
-    
-         # Set permissions
+         # Check if gradlew exists, if not create it
+         if [ ! -f "gradlew" ]; then
+          echo "Gradle wrapper not found, creating one..."
+          gradle wrapper  # This assumes Gradle is installed
+         fi
+
+         # Set permissions for the wrapper script and gradle-wrapper.jar
          chmod +x gradlew
-         chmod +x gradle/wrapper/gradle-wrapper.jar  # Ensure gradle-wrapper.jar is executable too
+         chmod +x gradle/wrapper/gradle-wrapper.jar  # Ensure gradle-wrapper.jar is executable
+
+         # Check for Gradle build files, and initialize if none exist
+         if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
+         echo "No Gradle build files found. Initializing Gradle project..."
+         gradle init
+         fi
 
          if [[ "${{ github.event.inputs.taskName }}" == *Release* ]]; then
-         echo "Task contains 'Release', attempting to sign a release build with a debug key."
+          echo "Task contains 'Release', attempting to sign a release build with a debug key."
 
           if [ ! -f "$HOME/.android/debug.keystore" ]; then
            echo "Debug keystore not found. Creating one..."
-
+        
            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "C=US, O=Android, CN=Android Debug"
-
+        
            mkdir -p $HOME/.android
            mv debug.keystore $HOME/.android/debug.keystore
            chmod +x $HOME/.android/debug.keystore # Set permissions for the keystore
-         fi
+          fi
 
-         ./gradlew ${{ github.event.inputs.taskName }} \
-         -Pandroid.injected.signing.store.file="$HOME/.android/debug.keystore" \
+          ./gradlew assembleRelease \
+          -Pandroid.injected.signing.store.file="$HOME/.android/debug.keystore" \
           -Pandroid.injected.signing.store.password=android \
-         -Pandroid.injected.signing.key.alias=androiddebugkey \
+          -Pandroid.injected.signing.key.alias=androiddebugkey \
           -Pandroid.injected.signing.key.password=android \
           --stacktrace
          else
-          ./gradlew ${{ github.event.inputs.taskName }} --stacktrace
+         ./gradlew assembleRelease --stacktrace
          fi
+
 
 
       - name: Upload the APK artifact with 1 day retention
