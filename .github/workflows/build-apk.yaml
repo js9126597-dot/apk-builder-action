@@ -37,11 +37,12 @@ jobs:
 
       - name: Clone project
         run: |
-          if [[ -z "${{ github.event.inputs.branchName }}" ]; then
-            git clone --recurse-submodules --depth=1 ${{ github.event.inputs.repository }} workspace
+          if [[ -z "${{ github.event.inputs.branchName }}" ]]; then
+            git clone --recurse-submodules --depth=1 https://github.com/GeekNeuron/SubPilot.git workspace
           else
-            git clone --recurse-submodules --depth=1 --branch ${{ github.event.inputs.branchName }} ${{ github.event.inputs.repository }} workspace
+            git clone --recurse-submodules --depth=1 --branch "${{ github.event.inputs.branchName }}" https://github.com/GeekNeuron/SubPilot.git workspace
           fi
+
 
       - name: Build APK
         working-directory: ./workspace/${{ github.event.inputs.subdir }}
