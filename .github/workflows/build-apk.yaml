@@ -67,8 +67,8 @@ jobs:
           fi
 
           # Set permissions for the wrapper script
-          chmod +ux gradlew
-          chmod +ux gradle/wrapper/gradle-wrapper.jar
+          chmod +x gradlew
+          chmod +x gradle/wrapper/gradle-wrapper.jar
           
 
 
@@ -114,7 +114,7 @@ jobs:
          # Set permissions for the wrapper script and gradle-wrapper.jar
          chmod +x gradlew
          ./gradlew --version
-         chmod +ux gradle/wrapper/gradle-wrapper.jar  # Ensure gradle-wrapper.jar is executable
+         chmod +x gradle/wrapper/gradle-wrapper.jar  # Ensure gradle-wrapper.jar is executable
 
          if [[ "${{ github.event.inputs.taskName }}" == *Release* ]]; then
           # Signing logic remains unchanged
@@ -126,7 +126,7 @@ jobs:
          if [ ! -f "build.gradle" ] && [ ! -f "settings.gradle" ]; then
          echo "No Gradle build files found. Initializing Gradle project..."
          gradle init
-         chmod +ux gradle/wrapper/gradle-wrapper.jar
+         chmod +x gradle/wrapper/gradle-wrapper.jar
          fi
 
          if [[ "${{ github.event.inputs.taskName }}" == *Release* ]]; then
@@ -139,7 +139,7 @@ jobs:
         
            mkdir -p $HOME/.android
            mv debug.keystore $HOME/.android/debug.keystore
-           chmod +ux $HOME/.android/debug.keystore # Set permissions for the keystore
+           chmod +x $HOME/.android/debug.keystore # Set permissions for the keystore
           fi
 
           ./gradlew assembleRelease \
@@ -149,7 +149,7 @@ jobs:
           -Pandroid.injected.signing.key.password=android \
           --stacktrace
          else
-          chmod +ux gradle/wrapper/gradle-wrapper.jar
+          chmod +x gradle/wrapper/gradle-wrapper.jar
           ./gradlew assembleRelease --stacktrace
          fi
 
